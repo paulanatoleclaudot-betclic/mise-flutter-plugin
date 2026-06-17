@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+# Files mise reads to detect a pinned version outside mise.toml.
+
+set -euo pipefail
+
+echo ".flutter-version"

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Print the latest stable Flutter version (used to resolve `flutter@latest`).
+
+set -euo pipefail
+PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/utils.bash
+source "${PLUGIN_DIR}/lib/utils.bash"
+
+latest_stable_version

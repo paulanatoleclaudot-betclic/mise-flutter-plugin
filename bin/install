@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#
+# Install a Flutter version.
+#
+#   flutter@<version>                official stable release (prebuilt archive)
+#   flutter@ref:<commit|branch|tag>  custom build from git
+#   flutter[remote=<url>]@<ref>      custom build from a fork / internal mirror
+#
+# A `remote` (or `url`) tool option forces the git path even for a plain
+# version request: the version is then interpreted as a git ref.
+
+set -euo pipefail
+PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/utils.bash
+source "${PLUGIN_DIR}/lib/utils.bash"
+# shellcheck source=lib/release.bash
+source "${PLUGIN_DIR}/lib/release.bash"
+# shellcheck source=lib/git.bash
+source "${PLUGIN_DIR}/lib/git.bash"
+
+# `flutter --version` validates the install and, for a freshly cloned commit,
+# triggers the first-run download of the matching Dart SDK + engine artifacts.
+verify_flutter() {
+  local install_path="$1"
+  local bin
+  bin="${install_path}/bin/$(flutter_bin_name)"
+  [ -x "$bin" ] || die "flutter binary not found at ${bin}"
+  msg "running flutter --version (downloads the Dart SDK + engine on first run)"
+  "$bin" --version
+}
+
+main() {
+  local install_type="${ASDF_INSTALL_TYPE:-version}"
+  local version="${ASDF_INSTALL_VERSION:?ASDF_INSTALL_VERSION is required}"
+  local install_path="${ASDF_INSTALL_PATH:?ASDF_INSTALL_PATH is required}"
+
+  if [ "$install_type" == "ref" ] || is_custom_remote; then
+    install_from_git "$version" "$install_path"
+  else
+    install_release "$version" "$install_path"
+  fi
+
+  verify_flutter "$install_path"
+}
+
+main "$@"
