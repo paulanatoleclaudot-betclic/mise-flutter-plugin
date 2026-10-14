@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 env:
   FLUTTER_REF: 27fec0e365a374f1d9c1ffb24b57b4fc69966c9a
